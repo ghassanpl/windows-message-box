@@ -141,9 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="windows_folder_browser.h" />
     <ClInclude Include="windows_message_box.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="windows_folder_browser.cpp" />
     <ClCompile Include="windows_message_box.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

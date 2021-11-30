@@ -31,13 +31,10 @@
 
 namespace ghassanpl
 {
-	namespace
+	std::wstring utf8_to_utf16(std::string_view str)
 	{
-		std::wstring utf8_to_utf16(std::string_view str)
-		{
-			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			return converter.from_bytes(str.data(), str.data() + str.size());
-		}
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		return converter.from_bytes(str.data(), str.data() + str.size());
 	}
 
 	windows_message_box_result windows_message_box(windows_message_box_params const& param)

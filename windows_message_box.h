@@ -29,6 +29,26 @@ namespace ghassanpl
 		Security = -4
 	};
 
+	/// Struct: windows_message_box_result
+	/// Holds the results of the windows_message_box invocation
+	struct windows_message_box_result
+	{
+		/// Field: Failed
+		/// Will be true if the message box was closed via the "X" button or failed to appear (perhaps due to argument errors)
+		bool Failed = false;
+
+		/// Field: ClickedButton
+		/// The number of the button that was clicked
+		size_t ClickedButton = 0;
+
+		/// Field: CheckboxValue
+		/// Whether or not the checkbox was checked
+		bool CheckboxValue = false;
+
+		explicit operator bool() const noexcept { return !Failed; }
+		operator size_t() const noexcept { return Failed ? -1 : ClickedButton; }
+	};
+
 	namespace msg
 	{
 		/// Title of the message box window. This is "Message" by default.
@@ -54,6 +74,11 @@ namespace ghassanpl
 
 		/// If given, the message box will be modal to this window. Must be intitalized with a value of type <c>static_cast&lt;void*&gt;(HWND)</c>.
 		struct window_handle { void* handle; };
+
+		static inline constexpr std::string_view ok_button[] = { "OK" };
+		static inline constexpr std::string_view yes_no_buttons[] = { "Yes", "No" };
+		static inline constexpr std::string_view yes_no_cancel_buttons[] = { "Yes", "No", "Cancel" };
+		static inline constexpr std::string_view abort_retry_ignore_buttons[] = { "Abort", "Retry", "Ignore" };
 	}
 
 	/// Function: windows_message_box
@@ -83,28 +108,18 @@ namespace ghassanpl
 	template <typename... ARGS>
 	windows_message_box_result windows_message_box(std::string_view title, std::string_view description, ARGS&&... args)
 	{
-		return ::ghassanpl::windows_message_box({ msg::title{title}, msg::description{description}, std::forward<ARGS>(args)... });
+		return ::ghassanpl::windows_message_box({ ::ghassanpl::msg::title{title}, ::ghassanpl::msg::description{description}, std::forward<ARGS>(args)... });
 	}
 
-	/// Struct: windows_message_box_result
-	/// Holds the results of the windows_message_box invocation
-	struct windows_message_box_result
+	namespace msg
 	{
-		/// Field: Failed
-		/// Will be true if the message box was closed via the "X" button or failed to appear (perhaps due to argument errors)
-		bool Failed = false;
-
-		/// Field: ClickedButton
-		/// The number of the button that was clicked
-		size_t ClickedButton = 0;
-
-		/// Field: CheckboxValue
-		/// Whether or not the checkbox was checked
-		bool CheckboxValue = false;
-
-		explicit operator bool() const noexcept { return !Failed; }
-		operator size_t() const noexcept { return Failed ? -1 : ClickedButton; }
-	};
+		template <typename... ARGS>
+		bool confirm(std::string_view description, ARGS&&... args)
+		{
+			auto result = ::ghassanpl::windows_message_box({ ::ghassanpl::msg::title{"Are you sure?"}, ::ghassanpl::msg::description{description}, ::ghassanpl::msg::yes_no_buttons, 1, std::forward<ARGS>(args)... });
+			return result && result == 0;
+		}
+	}
 
 	/// Class: windows_message_box_event
 	enum class windows_message_box_event
@@ -121,12 +136,10 @@ namespace ghassanpl
 	/// Holds all the parameters for the message box. Prefer to use the variadic version of <windows_message_box>
 	struct windows_message_box_params
 	{
-		static inline constexpr std::string_view default_buttons[1] = { "OK" };
-
 		std::string_view title = "Message";
 		windows_message_box_icon icon = windows_message_box_icon::Information;
 		std::string_view description{};
-		std::span<std::string_view const> buttons = default_buttons;
+		std::span<std::string_view const> buttons = msg::ok_button;
 		std::vector<std::string_view> buttons_storage;
 		size_t default_button = 0;
 		std::string_view default_button_str{};

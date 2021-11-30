@@ -18,9 +18,15 @@
     <ClInclude Include="windows_message_box.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="windows_folder_browser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="windows_message_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows_folder_browser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
